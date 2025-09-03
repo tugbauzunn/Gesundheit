@@ -1,56 +1,48 @@
 import 'package:flutter/material.dart';
+import '../../utils/responsive_utils.dart';
 import 'service_card.dart';
 
 class ServicesGrid extends StatelessWidget {
-  final VoidCallback? onPflegestufeTap;
-
-  const ServicesGrid({super.key, this.onPflegestufeTap});
+  const ServicesGrid({super.key});
 
   @override
   Widget build(BuildContext context) {
     return GridView.count(
+      crossAxisCount: ResponsiveUtils.isMobile(context) ? 3 : 4,
+      crossAxisSpacing: 16,
+      mainAxisSpacing: 16,
+      childAspectRatio: 1.0,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 3,
-      mainAxisSpacing: 16,
-      crossAxisSpacing: 16,
-      childAspectRatio: 0.85,
-      children: [
-        // Termine
-        const ServiceCard(
-          icon: Icons.home_outlined,
-          title: 'Termine',
-          isActive: false,
-        ),
-        // Ambulante Behandlung
-        const ServiceCard(
-          icon: Icons.accessibility_new,
-          title: 'Ambulante\nBehandlung',
-          isActive: false,
-        ),
-        // Stationäre Pflege
-        const ServiceCard(
-          icon: Icons.business,
-          title: 'Stationäre\nPflege',
-          isActive: false,
-        ),
-        // Pflegeheim
-        const ServiceCard(
-          icon: Icons.home_work,
-          title: 'Pflegeheim',
-          isActive: false,
-        ),
-        // Pflegestufe (Çalışan buton)
+      children: const [
         ServiceCard(
-          icon: Icons.trending_up,
-          title: 'Pflegestufe',
-          isActive: true,
-          onTap: onPflegestufeTap,
+          title: 'Termine',
+          icon: Icons.home_outlined,
+          isActive: false,
         ),
-        // Pflegekraft
-        const ServiceCard(
-          icon: Icons.medical_services,
+        ServiceCard(
+          title: 'Ambulante\nBehandlung',
+          icon: Icons.accessibility_new,
+          isActive: false,
+        ),
+        ServiceCard(
+          title: 'Stationäre\nPflege',
+          icon: Icons.business_outlined,
+          isActive: false,
+        ),
+        ServiceCard(
+          title: 'Pflegeheim',
+          icon: Icons.home_outlined,
+          isActive: false,
+        ),
+        ServiceCard(
+          title: 'Pflegestufe',
+          icon: Icons.trending_up,
+          isActive: true,
+        ),
+        ServiceCard(
           title: 'Pflegekraft',
+          icon: Icons.local_drink_outlined,
           isActive: false,
         ),
       ],

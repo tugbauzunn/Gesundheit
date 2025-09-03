@@ -37,6 +37,12 @@ app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Request logging
+app.use((req, res, next) => {
+  console.log(`🔄 ${req.method} ${req.path} - ${new Date().toISOString()}`);
+  next();
+});
+
 // Multer konfigürasyonu - PDF dosyaları için
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -98,14 +104,20 @@ app.get('/', (req, res) => {
 // PDF dosyası yükleme
 app.options('/api/upload-pdf', cors()); // Preflight request için
 app.post('/api/upload-pdf', upload.single('pdf'), (req, res) => {
+  console.log('📨 POST /api/upload-pdf request alındı');
+  console.log('🔍 Request headers:', req.headers);
+  console.log('🔍 Request body keys:', Object.keys(req.body));
+  
   try {
     if (!req.file) {
+      console.log('❌ Dosya bulunamadı');
       return res.status(400).json({
         success: false,
         message: 'PDF dosyası bulunamadı'
       });
     }
 
+    console.log('✅ Dosya başarıyla alındı:', req.file.originalname);
     const fileInfo = {
       id: uuidv4(),
       originalName: req.file.originalname,
@@ -115,6 +127,7 @@ app.post('/api/upload-pdf', upload.single('pdf'), (req, res) => {
       path: req.file.path
     };
 
+    console.log('📤 Response gönderiliyor:', fileInfo);
     res.json({
       success: true,
       message: 'PDF dosyası başarıyla yüklendi',
@@ -122,7 +135,7 @@ app.post('/api/upload-pdf', upload.single('pdf'), (req, res) => {
     });
 
   } catch (error) {
-    console.error('PDF yükleme hatası:', error);
+    console.error('❌ PDF yükleme hatası:', error);
     res.status(500).json({
       success: false,
       message: 'Dosya yüklenirken hata oluştu',
@@ -210,6 +223,34 @@ app.delete('/api/delete-pdf/:filename', (req, res) => {
 
 // Yeni bakım düzeyi talebi oluştur
 app.post('/api/care-level-request', (req, res) => {
+  try {
+    const request = {
+      id: uuidv4(),
+      ...req.body,
+      createdAt: new Date().toISOString(),
+      status: 'pending'
+    };
+
+    careLevelRequests.push(request);
+
+    res.status(201).json({
+      success: true,
+      message: 'Bakım düzeyi talebi başarıyla oluşturuldu',
+      data: request
+    });
+
+  } catch (error) {
+    console.error('Talep oluşturma hatası:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Talep oluşturulurken hata oluştu',
+      error: error.message
+    });
+  }
+});
+
+// Çoğul endpoint - Flutter app ile uyumluluk için
+app.post('/api/care-level-requests', (req, res) => {
   try {
     const request = {
       id: uuidv4(),
