@@ -426,7 +426,7 @@ class SimpleHomeScreen extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -441,7 +441,7 @@ class SimpleHomeScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color:
                     (isActive ? AppColors.homeServiceActive : AppColors.primary)
-                        .withOpacity(0.1),
+                        .withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(
                   ResponsiveUtils.getSmallBorderRadius(context),
                 ),
